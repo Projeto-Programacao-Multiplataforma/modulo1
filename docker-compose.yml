@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: modulo1_postgres
+    environment:
+      POSTGRES_DB: modulodb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:6
+    container_name: modulo1_mongo
+    ports:
+      - "27017:27017"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.1
+    container_name: modulo1_es
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+
+  graylog:
+    image: graylog/graylog:6.2
+    container_name: modulo1_graylog
+    depends_on:
+      - mongo
+      - elasticsearch
+    environment:
+      GRAYLOG_PASSWORD_SECRET: changeme
+      GRAYLOG_ROOT_PASSWORD_SHA2: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+      GRAYLOG_HTTP_EXTERNAL_URI: http://127.0.0.1:9000/
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"
+
+volumes:
+  pgdata:

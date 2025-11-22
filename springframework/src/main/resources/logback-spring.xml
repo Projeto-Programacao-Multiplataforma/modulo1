@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Appender Graylog (aponta para o container do Graylog) -->
+    <appender name="GRAYLOG" class="net.logstash.logback.appender.LogstashUdpSocketAppender">
+        <!-- Aponta para o container do Graylog no Docker -->
+        <host>localhost</host>
+        <port>12201</port>
+        <layout class="net.logstash.logback.layout.LogstashLayout"/>
+        <!-- Evita falha caso o Graylog não esteja pronto -->
+        <ignoreExceptions>true</ignoreExceptions>
+    </appender>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger raiz -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- Logger da aplicação -->
+    <logger name="com.projeto" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="GRAYLOG"/>
+    </logger>
+
+</configuration>
